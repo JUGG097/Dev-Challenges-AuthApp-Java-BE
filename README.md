@@ -1,6 +1,13 @@
-# My Java SpringBoot Template
+# Auth App Java/SpringBoot Backend Project (The backend for the Auth App website deployed [here]())
 
-This template was generated from a CMD using `Java` v "17", a bunch of dependency libraries already added to it.
-It uses `maven` for its build operations.
+This project was developed using `Java` v "17" and `Spring Boot` v "2.7.3".
 
-Feel free to clone repo and improve on it.
+Deployed on a `Digital Oceans` Droplet using `Github Actions` for CI/CD.
+
+The Auth App Website was deployed with `Netlify` link [here](/).
+
+Figma design was provided by [devChallenges.io](https://devchallenges.io/).
+
+You can clone project and customise at your end.
+
+### API Documentation
