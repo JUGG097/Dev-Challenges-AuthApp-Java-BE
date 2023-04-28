@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: dev-embedded-db
+    active: dev-pgsql-db
 
 ---
 spring:
@@ -18,6 +18,16 @@ spring:
         ddl-auto: update
       show-sql: 'true'
 
+---
+spring:
+  profiles: dev-pgsql-db
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/authapp
+    password: qwerty
+  jpa:
+    spring.jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
 ---
 spring:
   profiles: dev-embedded-db
