@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+jwt:
+  secret: jugg07
+  expirationMs: 86400000
+
 spring:
   profiles:
     active: dev-pgsql-db
@@ -27,7 +31,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/authapp
     password: qwerty
   jpa:
-    spring.jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
 ---
 spring:
   profiles: dev-embedded-db

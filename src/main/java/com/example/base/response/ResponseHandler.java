@@ -17,19 +17,31 @@ public class ResponseHandler {
 
         Map<String, Object> map = new ConcurrentHashMap<>();
         map.put("success", success);
-        map.put("status", status.value());
         map.put("data", responseObj);
 
         return new ResponseEntity<Object>(map, status);
 
     }
 
-    public ResponseEntity<Object> generateResponse(String message, HttpStatus status) {
+    public ResponseEntity<Object> generateResponse(Boolean success, HttpStatus status, String message) {
 
         Map<String, Object> map = new ConcurrentHashMap<>();
+        map.put("success", success);
         map.put("message", message);
-        map.put("status", status.value());
 
         return new ResponseEntity<Object>(map, status);
     }
+
+    public ResponseEntity<Object> generateJwtResponse(Boolean success, HttpStatus status,
+                                                      java.lang.Object responseObj, String jwtToken) {
+
+        Map<String, java.lang.Object> map = new ConcurrentHashMap<>();
+        map.put("success", success);
+        map.put("data", responseObj);
+        map.put("authToken", jwtToken);
+
+        return new ResponseEntity<java.lang.Object>(map, status);
+
+    }
+
 }

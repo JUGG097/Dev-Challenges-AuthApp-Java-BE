@@ -1,9 +1,6 @@
 package com.example.base.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +25,5 @@ public class User {
     private String password;
     private String bio;
     private String image;
-    private Number phoneNumber;
+    private String phoneNumber;
 }
