@@ -1,12 +1,17 @@
 package com.example.base.controller;
 
+import com.example.base.entity.RefreshToken;
 import com.example.base.entity.User;
+import com.example.base.error.TokenRefreshException;
 import com.example.base.repository.UserRepository;
 import com.example.base.request.SignInUpRequest;
+import com.example.base.request.TokenRefreshRequest;
 import com.example.base.request.UpdateProfileRequest;
 import com.example.base.response.ResponseHandler;
 import com.example.base.security.UserDetailsImpl;
 import com.example.base.security.jwt.JwtUtils;
+import com.example.base.service.RefreshTokenService;
+import com.example.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,6 +54,12 @@ public class AuthAppController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @GetMapping("/check")
     public ResponseEntity<Object> check() {
         return responseHandler.generateResponse(true,
@@ -61,48 +72,63 @@ public class AuthAppController {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
                         request.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        String jwt = jwtUtils.generateJwtToken(userDetails);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
 
         // Extract Info needed
         Map<String, Object> userObj = new ConcurrentHashMap<>();
         userObj.put("id", userDetails.getId());
         userObj.put("email", userDetails.getEmail());
 
-        return responseHandler.generateJwtResponse(true, HttpStatus.OK, userObj, jwt);
+        return responseHandler.generateJwtResponse(true, HttpStatus.OK, userObj, jwt, refreshToken.getToken());
     }
 
     @PostMapping(endpointAuthPrefix + "/signup")
     public ResponseEntity<Object> signup(@Valid @RequestBody SignInUpRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return responseHandler.generateResponse(false,
-                    HttpStatus.BAD_REQUEST, "Email already taken");
-        }
-        // Create User Entity and Save to DB
-        User user = User.builder()
-                .email(request.getEmail())
-                .password(encoder.encode(request.getPassword()))
-                .build();
+        User user = userService.createUser(request);
 
-        userRepository.save(user);
-
-        // Authenticate and Generate Jwt
+        // Authenticate and Generate Jwt (access and refresh)
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
                         request.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        String jwt = jwtUtils.generateJwtToken(userDetails);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
         // Extract Info needed
         Map<String, Object> userObj = new ConcurrentHashMap<>();
         userObj.put("id", userDetails.getId());
         userObj.put("email", userDetails.getEmail());
 
-        return responseHandler.generateJwtResponse(true, HttpStatus.OK, userObj, jwt);
+        return responseHandler.generateJwtResponse(true, HttpStatus.OK, userObj, jwt, refreshToken.getToken());
+    }
+
+    @PostMapping(endpointAuthPrefix + "/refreshToken")
+    public ResponseEntity<Object> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getEmail());
+                    return responseHandler.generateJwtResponse(true,
+                            HttpStatus.OK, user, token, requestRefreshToken);
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not in database!"));
     }
 
     @PutMapping(endpointUserPrefix + "/editProfile")
@@ -110,23 +136,12 @@ public class AuthAppController {
     public ResponseEntity<Object> editProfile(@Valid @RequestBody UpdateProfileRequest request) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
+
         String userEmail = userDetails.getUsername();
-        Optional<User> maybeUser = userRepository.findByEmail(userEmail);
 
-        if(maybeUser.isPresent()) {
-            User user = maybeUser.get();
-            user.setName(request.getName());
-            user.setBio(request.getBio());
-            user.setImage(request.getImage());
-            user.setPhoneNumber(request.getPhoneNumber());
+        User user = userService.updateUserDetails(userEmail, request);
 
-            userRepository.save(user);
-            return responseHandler.generateResponse(true, HttpStatus.OK, user);
-        }
-
-        return responseHandler.generateResponse(false,
-                HttpStatus.BAD_REQUEST,
-                "User Details Not Found");
+        return responseHandler.generateResponse(true, HttpStatus.OK, user);
     }
 
     @GetMapping(endpointUserPrefix + "/profile")
@@ -136,15 +151,9 @@ public class AuthAppController {
                 .getAuthentication().getPrincipal();
 
         String userEmail = userDetails.getUsername();
-        Optional<User> maybeUser = userRepository.findByEmail(userEmail);
 
-        if(maybeUser.isPresent()) {
-            User user = maybeUser.get();
-            return responseHandler.generateResponse(true, HttpStatus.OK, user);
-        }
+        User user = userService.getUserDetails(userEmail);
 
-        return responseHandler.generateResponse(false,
-                HttpStatus.BAD_REQUEST,
-                "User Details Not Found");
+        return responseHandler.generateResponse(true, HttpStatus.OK, user);
     }
 }

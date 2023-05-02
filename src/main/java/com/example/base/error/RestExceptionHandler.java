@@ -16,4 +16,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .success(false)
                 .build());
     }
+
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<ErrorResponse> tokenRefreshException(TokenRefreshException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse.builder()
+                .message(e.getMessage())
+                .success(false)
+                .build());
+    }
+
+    @ExceptionHandler(UserServiceException.class)
+    public ResponseEntity<ErrorResponse> userServiceException(UserServiceException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder()
+                .message(e.getMessage())
+                .success(false)
+                .build());
+    }
 }

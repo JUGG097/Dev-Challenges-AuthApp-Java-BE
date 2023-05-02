@@ -1,5 +1,6 @@
 package com.example.base.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public class User {
     private String name;
     @NotBlank
     private String email;
+    @JsonIgnore
     private String password;
     private String bio;
     private String image;

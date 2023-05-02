@@ -33,12 +33,14 @@ public class ResponseHandler {
     }
 
     public ResponseEntity<Object> generateJwtResponse(Boolean success, HttpStatus status,
-                                                      java.lang.Object responseObj, String jwtToken) {
+                                                      java.lang.Object responseObj, String jwtToken,
+                                                      String refreshToken) {
 
         Map<String, java.lang.Object> map = new ConcurrentHashMap<>();
         map.put("success", success);
         map.put("data", responseObj);
         map.put("authToken", jwtToken);
+        map.put("refreshToken", refreshToken);
 
         return new ResponseEntity<java.lang.Object>(map, status);
 
