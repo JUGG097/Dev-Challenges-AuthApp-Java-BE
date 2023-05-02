@@ -69,18 +69,11 @@ public class AuthAppController {
 
     @PostMapping(endpointAuthPrefix + "/login")
     public ResponseEntity<Object> login(@Valid @RequestBody SignInUpRequest request) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
-                        request.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = authenticateRequest(request.getEmail(), request.getPassword());
 
         String jwt = jwtUtils.generateJwtToken(userDetails);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-
 
         // Extract Info needed
         Map<String, Object> userObj = new ConcurrentHashMap<>();
@@ -94,14 +87,7 @@ public class AuthAppController {
     public ResponseEntity<Object> signup(@Valid @RequestBody SignInUpRequest request) {
         User user = userService.createUser(request);
 
-        // Authenticate and Generate Jwt (access and refresh)
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
-                        request.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = authenticateRequest(request.getEmail(), request.getPassword());
 
         String jwt = jwtUtils.generateJwtToken(userDetails);
 
@@ -155,5 +141,15 @@ public class AuthAppController {
         User user = userService.getUserDetails(userEmail);
 
         return responseHandler.generateResponse(true, HttpStatus.OK, user);
+    }
+
+    private UserDetailsImpl authenticateRequest(String email, String password) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(email,
+                        password));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return (UserDetailsImpl) authentication.getPrincipal();
     }
 }
