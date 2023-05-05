@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
+@CrossOrigin(origins = "*")
 @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthAppController {
 
