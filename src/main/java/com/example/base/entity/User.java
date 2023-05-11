@@ -28,4 +28,6 @@ public class User {
     private String bio;
     private String image;
     private String phoneNumber;
+    @JsonIgnore
+    private String provider;
 }

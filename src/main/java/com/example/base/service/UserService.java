@@ -21,13 +21,27 @@ public class UserService {
 
     public User createUser (SignInUpRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserServiceException("Email Already Taken");
+            throw new UserServiceException("Email Already Registered");
         }
+
+        User user;
         // Create User Entity and Save to DB
-        User user = User.builder()
-                .email(request.getEmail())
-                .password(encoder.encode(request.getPassword()))
-                .build();
+        if (request.getProvider().equals("LOCAL")) {
+            user = User.builder()
+                    .name(request.getName())
+                    .email(request.getEmail())
+                    .password(encoder.encode(request.getPassword()))
+                    .provider(request.getProvider())
+                    .build();
+        } else  {
+            user = User.builder()
+                    .name(request.getName())
+                    .email(request.getEmail())
+                    .password(encoder.encode(request.getEmail() + request.getProvider()))
+                    .provider(request.getProvider())
+                    .image(request.getImage())
+                    .build();
+        }
 
         userRepository.save(user);
 

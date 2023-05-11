@@ -5,6 +5,10 @@ jwt:
   secret: wedrftg
   expirationMs: 3600000
   refreshExpirationMs: 86400000
+
+github:
+  client_id: cadf0e5d93ad5ab623a8
+  client_secret: 2902ea02ae0b414ef310764256b1d044777f5c91
   ## For test
 #  expirationMs: 60000
 #  refreshExpirationMs: 120000
