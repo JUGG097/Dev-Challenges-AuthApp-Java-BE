@@ -43,9 +43,7 @@ public class UserService {
                     .build();
         }
 
-        userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     public User getUserDetails (String email) {
@@ -68,9 +66,7 @@ public class UserService {
         user.setImage(request.getImage());
         user.setPhoneNumber(request.getPhoneNumber());
 
-        userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
 }

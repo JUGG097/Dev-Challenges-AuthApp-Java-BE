@@ -32,12 +32,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
@@ -60,12 +58,6 @@ public class AuthAppController {
 
     @Autowired
     AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder encoder;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -109,6 +101,13 @@ public class AuthAppController {
     @PostMapping(endpointAuthPrefix + "/oauthLogin")
     public ResponseEntity<Object> oauthLogin(@Valid @RequestBody SignInUpRequest request) {
 
+        // Check if OAuth was used to create account
+        User user = userService.getUserDetails(request.getEmail());
+        if (user.getProvider().equals("LOCAL")) {
+            return responseHandler.generateResponse(false,
+                    HttpStatus.BAD_REQUEST, "Log In With Email and Password");
+        }
+
         UserDetailsImpl userDetails = authenticateRequest(request.getEmail(),
                 request.getEmail() + request.getProvider());
 
@@ -123,6 +122,8 @@ public class AuthAppController {
 
         return responseHandler.generateJwtResponse(true, HttpStatus.OK, userObj, jwt, refreshToken.getToken());
     }
+
+
 
     @PostMapping(endpointAuthPrefix + "/signup")
     public ResponseEntity<Object> signup(@Valid @RequestBody SignInUpRequest request) {

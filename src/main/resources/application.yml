@@ -1,55 +1,41 @@
-server:
-  port: 8080
-
-jwt:
-  secret: wedrftg
-  expirationMs: 3600000
-  refreshExpirationMs: 86400000
-
-github:
-  client_id: cadf0e5d93ad5ab623a8
-  client_secret: 2902ea02ae0b414ef310764256b1d044777f5c91
-  ## For test
-#  expirationMs: 60000
-#  refreshExpirationMs: 120000
-
 spring:
   profiles:
-    active: dev-pgsql-db
+    active: dev
 
----
-spring:
-  profiles: dev
-  datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    username: root
-    url: jdbc:mysql://localhost:3306/dcbapp
-    password: password
-    jpa:
-      hibernate:
-        ddl-auto: update
-      show-sql: 'true'
-
----
-spring:
-  profiles: dev-pgsql-db
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    url: jdbc:postgresql://localhost:5432/authapp
-    password: qwerty
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: validate
-
----
-spring:
-  profiles: dev-embedded-db
-  datasource:
-    url: jdbc:h2:mem:mydb
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
-  jpa:
-    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+# Difference configurations for DBs
+#---
+#spring:
+#  profiles: dev
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    username: root
+#    url: jdbc:mysql://localhost:3306/dcbapp
+#    password: password
+#    jpa:
+#      hibernate:
+#        ddl-auto: update
+#      show-sql: 'true'
+#
+#---
+#spring:
+#  profiles: dev-pgsql-db
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    username: postgres
+#    url: jdbc:postgresql://localhost:5432/authapp
+#    password: qwerty
+#  jpa:
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#    hibernate:
+#      ddl-auto: validate
+#
+#---
+#spring:
+#  profiles: dev-embedded-db
+#  datasource:
+#    url: jdbc:h2:mem:mydb
+#    username: sa
+#    password: password
+#    driverClassName: org.h2.Driver
+#  jpa:
+#    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
