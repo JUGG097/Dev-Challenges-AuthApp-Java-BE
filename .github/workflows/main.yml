@@ -19,7 +19,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Run Tests
-        run: ./mvnw test
+        run: mvn test
 
   build_publish_docker_image:
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
           commitChange: false
           createPR: false
       - name: Build Jar File
-        run: ./mvnw install
+        run: mvn install
       - name: Docker Login
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
