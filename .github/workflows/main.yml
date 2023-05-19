@@ -29,9 +29,7 @@ jobs:
                 "spring.datasource.username": "${{ secrets.POSTGRES_USERNAME }}",
                 "spring.datasource.url": "${{ secrets.POSTGRES_URL }}",
                 "spring.datasource.password": "${{ secrets.POSTGRES_PASSWORD }}"
-              }
-            },
-            {
+              },
               "src/main/resources/application.yml": {
                 "spring.profiles.active": "prod"
               }
