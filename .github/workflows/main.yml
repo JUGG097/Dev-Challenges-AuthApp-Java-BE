@@ -45,10 +45,10 @@ jobs:
         run: |
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - name: Build the Docker Image
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/authApp-java-be
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/authapp-java-be
       - name: Docker push
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        run: docker push ${{ secrets.DOCKER_USER }}/authApp-java-be:latest
+        run: docker push ${{ secrets.DOCKER_USER }}/authapp-java-be:latest
 
 
   pull_run_docker_image:
@@ -67,10 +67,10 @@ jobs:
 
           ## Have to fix this there must be a better way
           script: |
-            docker pull ${{ secrets.DOCKER_USER }}/authApp-java-be:latest
+            docker pull ${{ secrets.DOCKER_USER }}/authapp-java-be:latest
 
-            docker stop authApp-java-be
+            docker stop authapp-java-be
 
-            docker rm -f authApp-java-be
+            docker rm -f authapp-java-be
 
-            docker run -d -p 8080:8080 --name authApp-java-be ${{ secrets.DOCKER_USER }}/authApp-java-be:latest
+            docker run -d -p 8080:8080 --name authapp-java-be ${{ secrets.DOCKER_USER }}/authapp-java-be:latest
