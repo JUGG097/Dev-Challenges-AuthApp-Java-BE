@@ -12,7 +12,8 @@ github:
   ## For test
 #  expirationMs: 60000
 #  refreshExpirationMs: 120000
-
+client:
+  url:
 spring:
   datasource:
     url: jdbc:h2:mem:mydb
