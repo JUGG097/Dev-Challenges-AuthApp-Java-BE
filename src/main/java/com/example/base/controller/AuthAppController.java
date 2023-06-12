@@ -53,6 +53,9 @@ public class AuthAppController {
     @Value("${github.client_secret}")
     private String githubClientSecret;
 
+    @Value("${client.url}")
+    private String frontEndUrl;
+
     @Autowired
     private ResponseHandler responseHandler;
 
@@ -184,7 +187,7 @@ public class AuthAppController {
 
             if (gitHubUserDetails.getEmail() == null) {
                 return ResponseEntity.status(HttpStatus.FOUND)
-                        .location(URI.create("http://localhost:3000/oauthRedirect/?authToken=empty&refreshToken=empty" +
+                        .location(URI.create(frontEndUrl + "/oauthRedirect/?authToken=empty&refreshToken=empty" +
                                 "&mode=" + mode)).build();
             }
 
@@ -203,11 +206,11 @@ public class AuthAppController {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000/oauthRedirect/?authToken=" +
+                    .location(URI.create(frontEndUrl + "/oauthRedirect/?authToken=" +
                             jwt + "&refreshToken=" + refreshToken + "&mode=" + mode)).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:3000/oauthRedirect/?authToken=empty&refreshToken=empty" +
+                    .location(URI.create(frontEndUrl + "/oauthRedirect/?authToken=empty&refreshToken=empty" +
                             "&mode=" + mode)).build();
         }
     }

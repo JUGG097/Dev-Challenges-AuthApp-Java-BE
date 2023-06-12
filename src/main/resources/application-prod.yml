@@ -12,6 +12,10 @@ github:
   ## For test
 #  expirationMs: 60000
 #  refreshExpirationMs: 120000
+
+client:
+  url: https://authapp-adeoluwa.netlify.app
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
