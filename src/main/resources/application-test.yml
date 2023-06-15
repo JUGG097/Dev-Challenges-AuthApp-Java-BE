@@ -14,6 +14,17 @@ github:
 #  refreshExpirationMs: 120000
 client:
   url:
+#spring:
+#  datasource:
+#    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1;sql.syntax_pgs=true
+#    username: sa
+#    password:
+#    driverClassName: org.hsqldb.jdbc.JDBCDriver
+#  jpa:
+##    database-platform: org.hibernate.dialect.H2Dialect
+#    hibernate:
+#      ddl-auto: validate
+
 spring:
   datasource:
     url: jdbc:h2:mem:mydb
