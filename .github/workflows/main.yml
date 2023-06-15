@@ -42,6 +42,7 @@ jobs:
         run: mvn install
 
       - name: Update application.yml values
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: fjogeleit/yaml-update-action@main
         with:
           changes: |
@@ -54,9 +55,11 @@ jobs:
           createPR: false
 
       - name: Test and Build Jar File using Prod config
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: mvn install
 
       - name: Docker Login
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -64,6 +67,7 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
       - name: Build the Docker Image
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/authapp-java-be
 
       - name: Docker push
